@@ -14,11 +14,12 @@ import (
 func clientCommand(args []string) error {
 	cmd := flag.NewFlagSet("client", flag.ExitOnError)
 	listenAddr := cmd.String("listen", "0.0.0.0:0", "listen on the given IP:port")
-	insecure := cmd.Bool("insecure", false, "skip verifying server certificate")
+	insecure := cmd.Bool("insecure", true, "skip verifying server certificate")
 	logLevel := cmd.Int("v", quic.LevelInfo, "log verbose level")
 	cmd.Parse(args)
 
 	addr := cmd.Arg(0)
+	fmt.Println("addr ===================== %v", addr)
 	if addr == "" {
 		fmt.Fprintln(cmd.Output(), "Usage: quince client [options] <address>")
 		cmd.PrintDefaults()

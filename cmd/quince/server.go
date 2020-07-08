@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -19,6 +20,8 @@ func serverCommand(args []string) error {
 	logLevel := cmd.Int("v", quic.LevelInfo, "log verbose level")
 	enableRetry := cmd.Bool("retry", false, "enable address validation using Retry packet")
 	cmd.Parse(args)
+
+	fmt.Println("args ====== %v", args)
 
 	config := newConfig()
 	if *certFile != "" {
@@ -52,6 +55,13 @@ func (s *serverHandler) Serve(c quic.Conn, events []interface{}) {
 		case transport.StreamRecvEvent:
 			st := c.Stream(e.StreamID)
 			if st != nil {
+				p := make([]byte, 512)
+				n, err := st.Read(p)
+				if err != nil {
+					panic(err)
+				}
+				fmt.Printf("----RECV-- %d bytes : %s\n", n, string(p[:n]))
+
 				st.Write([]byte("pong!"))
 				st.Close()
 			}
